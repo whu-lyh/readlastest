@@ -6,7 +6,7 @@
 
 enum index { underflow, overflow };
 
-int main ()
+int main1 ()
 {
 	std::string outputpath = "E:/PY-Group/Tallinn-Estonia/testDir/las/run4_xyz_gpstime.las";
 	std::string filename = "E:/PY-Group/Tallinn-Estonia/testDir/txt/Run4_xyzit_az_id_XYZ_ypr2.8_-37_0_0.1_0.23_0.535_18-10-13.txt";

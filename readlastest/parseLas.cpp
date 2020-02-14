@@ -11,22 +11,24 @@
 
 uint32_t parsesinglelas (std::string filename);
 
-int main ()
+int main2 ()
 {
 	//read las files from a directory
-	std::string filenpaths = "F:/wuhan/iScan-00000000-20191211103207";
+	std::string filenpaths = "D:/data/wuhan/iScan-00000000-20191212152907";
 
 	std::vector<std::string> lasfiles;
 	Utility::get_files ( filenpaths, ".las", lasfiles );
 
 	uint32_t pointNum = 0;
-#pragma parallel for
+#pragma omp parallel for
 	for (int i =0; i<lasfiles.size();++i)
 	{
 		std::cout << "current file name:	" << lasfiles [i] << std::endl;
-		pointNum += parsesinglelas ( lasfiles [i] );
+		//pointNum += parsesinglelas ( lasfiles [i] );
 	}
 	std::cout << "current las directory's point number is:	" << pointNum << std::endl;
+
+	parsesinglelas ( lasfiles [0] );
 
 	system ( "pause" );
 	return 0;
@@ -67,11 +69,24 @@ uint32_t parsesinglelas ( std::string filename )
 	//bounding box
 	liblas::Bounds<double> bound = header.GetExtent ();
 
-	//while ( reader.ReadNextPoint () )
-	//{
-	//	liblas::Point const& p = reader.GetPoint ();
-	//	//std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
-	//}
+	//different way to load point using for loop
+	reader.ReadPointAt ( pts_count - 3 );
+	liblas::Point const& plast3 = reader.GetPoint ();
+	std::cout << plast3 << std::endl;
+	reader.ReadPointAt ( pts_count - 2 );
+	liblas::Point const& plast2 = reader.GetPoint ();
+	std::cout << plast2 << std::endl;
+	reader.ReadPointAt ( pts_count - 1 );
+	liblas::Point const& plast1 = reader.GetPoint ();
+	std::cout << plast1 << std::endl;
+
+	/*while ( reader.ReadNextPoint () )
+	{
+
+		liblas::Point const& p = reader.GetPoint ();
+		std::cout << p << std::endl;
+		std::cout << std::endl;
+	}*/
 
 	return pts_count;
 }
