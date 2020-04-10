@@ -6,11 +6,10 @@
 #include <string>
 #include <liblas/liblas.hpp>
 
-int main0 () 
+int main () 
 {
-	//read las file failed
-
-	std::string filename = "E:/PY-Group/Tallinn-Estonia/testDir/Run1_xyzit_az_id_XYZ_ypr2.8_-37_0_0.1_0.23_0.535_18-10-13.las";
+	//read las file
+	std::string filename = "F:/Data/EstoniaNew/N6mme_testarea/20190717_082048_LD5_grab_log_VLP-16_XYZ_ypr-1_-38_-0.5_0.1_0.23_0.535_19-07-17.las";
 
 	//open file
 	std::ifstream ifs;
@@ -37,51 +36,51 @@ int main0 ()
 	double offset_x = header.GetOffsetX ();
 	double offset_y = header.GetOffsetY ();
 	double offset_z = header.GetOffsetZ ();
-	//las_offset = Offset (offset_x, offset_y, offset_z);
 
 	//bounding box
 	liblas::Bounds<double> bound = header.GetExtent ();
-	/*if (bound.RangeVec.empty())
+	if (bound.empty ())
 	{
 		std::cout << "The header of this las doesn't contain extent. The cache cannot be built.";
 		return false;
-	}*/
+	}
 
 	while (reader.ReadNextPoint ())
 	{
 		liblas::Point const& p = reader.GetPoint ();
 
-		std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
+		//std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
 	}
+	ifs.close ();
 
 	//rewrite the las file
-	std::ofstream ofs;
+	/*std::ofstream ofs;
 	ofs.open ("file.las", std::ios::out | std::ios::binary);
 
-	liblas::Header oheader = reader.GetHeader ();
+	liblas::Header oheader = reader.GetHeader ();*/
 
 	/*std::ios::openmode m = std::ios::out | std::ios::in | std::ios::binary | std::ios::ate;
 	ofs.open ("file.las", m);
 	liblas::Writer writer (ofs, oheader);*/
 
 	//liblas::Header oheader;
-	oheader.SetDataFormatId (liblas::ePointFormat1); // Time only
+	//oheader.SetDataFormatId (liblas::ePointFormat1); // Time only
 
-	// Set coordinate system using GDAL support
-	liblas::SpatialReference srs;
-	srs.SetFromUserInput ("EPSG:4326");
+	//// Set coordinate system using GDAL support
+	//liblas::SpatialReference srs;
+	//srs.SetFromUserInput ("EPSG:4326");
 
-	oheader.SetSRS (srs);
+	//oheader.SetSRS (srs);
 
-	liblas::Writer writer (ofs, oheader);
+	//liblas::Writer writer (ofs, oheader);
 
-	liblas::Point point (&oheader);
-	point.SetCoordinates (10, 20, 30);
-	// fill other properties of point record
+	//liblas::Point point (&oheader);
+	//point.SetCoordinates (10, 20, 30);
+	//// fill other properties of point record
 
-	writer.WritePoint (point);
+	//writer.WritePoint (point);
 
-	ofs.close ();
+	//ofs.close ();
 
 	// fill other header members
 

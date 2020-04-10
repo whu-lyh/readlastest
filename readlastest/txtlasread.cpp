@@ -6,7 +6,7 @@
 
 enum index { underflow, overflow };
 
-int main ()
+int main1 ()
 {
 	std::string outputpath = "E:/PY-Group/Tallinn-Estonia/testDir/las/run4_xyz_gpstime.las";
 	std::string filename = "E:/PY-Group/Tallinn-Estonia/testDir/txt/Run4_xyzit_az_id_XYZ_ypr2.8_-37_0_0.1_0.23_0.535_18-10-13.txt";
@@ -26,7 +26,7 @@ int main ()
 	liblas::Header header;
 	header.SetVersionMajor (1);
 	header.SetVersionMinor (2);
-	header.SetDataFormatId (liblas::ePointFormat3); //不同格式之间的区别是什么？反正2是无法settime的
+	header.SetDataFormatId (liblas::ePointFormat3);
 	header.SetOffset (0.0, 0.0, 0.0);
 
 	liblas::Writer writer (ofs, header);
@@ -62,9 +62,9 @@ int main ()
 				x = stod (datavec [0]);
 				y = stod (datavec [1]);
 				z = stoi (datavec [2]);
-				unixtime = stod (datavec [4]) - 1539413300; //this parameter could be changed when needed
+				unixtime = stod (datavec [4]);// -1539413300; //this parameter could be changed when needed
 				unixtime *= 1000000;
-				unixtime = static_cast<int>(unixtime) / 1000000.0;
+				unixtime = static_cast<double>(unixtime) / 1000000.0;
 				maxX = x > maxX ? x : maxX;
 				maxY = y > maxY ? y : maxY;
 				maxZ = z > maxZ ? z : maxZ;
@@ -84,7 +84,7 @@ int main ()
 			double pz = static_cast<double>(z);
 			pt.SetCoordinates (px, py, pz);
 			header.SetOffset (maxX,maxY,maxZ);
-			pt.SetTime (unixtime);//unixtime,太大了，以致于64位的都溢出，所以，暂时先搁置，等爱沙尼亚反馈。
+			pt.SetTime (unixtime);
 
 			writer.WritePoint (pt);
 		}
