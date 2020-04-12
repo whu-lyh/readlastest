@@ -70,12 +70,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\vs2017lib\include;D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(WindowsSDK_IncludePath);$(VC_IncludePath)</IncludePath>
-    <LibraryPath>D:\Software\pcl-1.8.1\3rdParty\Boost\lib;$(VC_LibraryPath_x64);D:\vs2017lib\lib\Release;$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>D:\vs2017lib\include;D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(WindowsSDK_IncludePath);$(VC_IncludePath);D:\Software\libLAS-1.8.1\libLAS-lyh\install\include</IncludePath>
+    <LibraryPath>D:\Software\pcl-1.8.1\3rdParty\Boost\lib;$(VC_LibraryPath_x64);D:\vs2017lib\lib\Release;$(WindowsSDK_LibraryPath_x64);D:\Software\libLAS-1.8.1\libLAS-lyh\install\lib\Release</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Software\pcl-1.8.1\3rdParty\Boost\lib;D:\Libraries_vs2017\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\vs2017lib\include;D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(WindowsSDK_IncludePath);$(VC_IncludePath);D:\Software\libLAS-1.8.1\libLAS-lyh\install\include</IncludePath>
+    <LibraryPath>D:\Software\pcl-1.8.1\3rdParty\Boost\lib;$(VC_LibraryPath_x64);D:\vs2017lib\lib\Debug;$(WindowsSDK_LibraryPath_x64);D:\Software\libLAS-1.8.1\libLAS-lyh\install\lib\Debug</LibraryPath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="lastest.cpp" />
     <ClCompile Include="txtlasread.cpp" />
+    <ClCompile Include="writelasfile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -15,7 +15,7 @@ int main ()
 	std::ifstream ifs;
 	ifs.open (filename, std::ios::in | std::ios::binary);
 	if (!ifs)
-		return false;
+		return 0;
 
 	liblas::ReaderFactory f;
 	liblas::Reader reader = f.CreateWithStream (ifs);
@@ -25,7 +25,7 @@ int main ()
 	if (major_version > 1 || minor_version > 3)
 	{
 		std::cout << "Currently this app doesn't support version newer than 1.4";
-		return false;
+		return 0;
 	}
 
 	//num of points
@@ -33,6 +33,7 @@ int main ()
 	uint32_t offset = header.GetDataOffset ();
 	uint32_t pt_length = header.GetDataRecordLength ();
 	liblas::PointFormatName las_format = header.GetDataFormatId ();
+	std::cout << las_format << std::endl;
 	double offset_x = header.GetOffsetX ();
 	double offset_y = header.GetOffsetY ();
 	double offset_z = header.GetOffsetZ ();
@@ -42,47 +43,51 @@ int main ()
 	if (bound.empty ())
 	{
 		std::cout << "The header of this las doesn't contain extent. The cache cannot be built.";
-		return false;
+		return 0;
 	}
 
-	while (reader.ReadNextPoint ())
-	{
-		liblas::Point const& p = reader.GetPoint ();
+	//rewrite the las file
+	std::ofstream ofs;
+	ofs.open ("./filelas.las", std::ios::out | std::ios::binary);
+	ofs.setf (std::ios::fixed, std::ios::floatfield);
+	ofs.precision (6);
+	std::cout << "done" << std::endl;
 
-		//std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
+	if (ofs.is_open ())
+	{
+		liblas::Header oheader;
+		oheader.SetDataFormatId (liblas::ePointFormat2); // Time only
+		//oheader.SetDataFormatId (liblas::ePointFormat2); //color and intensity
+		oheader.SetVersionMajor (1);
+		oheader.SetVersionMinor (2);
+		oheader.SetOffset (offset_x, offset_y, offset_z);
+		oheader.SetScale (0.0001, 0.0001, 0.0001);
+		oheader.SetPointRecordsCount (pts_count);
+
+		/* Set coordinate system using GDAL support£¬ only for gdal2.0+
+		liblas::SpatialReference srs;
+		srs.SetFromUserInput ("EPSG:4326");
+		oheader.SetSRS (srs);*/
+
+		liblas::Writer writer (ofs, oheader);
+		liblas::Point point (&oheader);
+
+		while (reader.ReadNextPoint ())
+		{
+			liblas::Point const& p = reader.GetPoint ();
+
+			//std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
+			point.SetCoordinates (p.GetX (), p.GetY (), p.GetZ ());
+			point.SetIntensity (10);
+			point.SetColor (liblas::Color (255, 255, 0));
+			writer.WritePoint (point);
+		}
+
 	}
 	ifs.close ();
 
-	//rewrite the las file
-	/*std::ofstream ofs;
-	ofs.open ("file.las", std::ios::out | std::ios::binary);
-
-	liblas::Header oheader = reader.GetHeader ();*/
-
-	/*std::ios::openmode m = std::ios::out | std::ios::in | std::ios::binary | std::ios::ate;
-	ofs.open ("file.las", m);
-	liblas::Writer writer (ofs, oheader);*/
-
-	//liblas::Header oheader;
-	//oheader.SetDataFormatId (liblas::ePointFormat1); // Time only
-
-	//// Set coordinate system using GDAL support
-	//liblas::SpatialReference srs;
-	//srs.SetFromUserInput ("EPSG:4326");
-
-	//oheader.SetSRS (srs);
-
-	//liblas::Writer writer (ofs, oheader);
-
-	//liblas::Point point (&oheader);
-	//point.SetCoordinates (10, 20, 30);
-	//// fill other properties of point record
-
-	//writer.WritePoint (point);
-
-	//ofs.close ();
-
-	// fill other header members
+	ofs.flush ();
+	ofs.close ();
 
 	system ("pause");
 	return 0;
