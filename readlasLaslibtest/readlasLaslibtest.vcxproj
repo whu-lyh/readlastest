@@ -72,15 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Software\LAStools\install\include;D:\Software\LAStools\install\include\src;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Software\LAStools\install\lib\release;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Software\LAStools-nuc.edu\LAStools\LASlib\inc;$(IncludePath);D:\Software\LAStools-nuc.edu\LAStools\LASzip\src</IncludePath>
+    <LibraryPath>$(LibraryPath);D:\Software\LAStools-nuc.edu\LAStools\LASlib\lib\Release</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\Software\LAStools\install\include;D:\Software\LAStools\install\include\src;D:\Software\LAStools\install\include\stl;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Software\LAStools-nuc.edu\LAStools\LASlib\inc;$(IncludePath);D:\Software\LAStools-nuc.edu\LAStools\LASzip\src</IncludePath>
+    <LibraryPath>$(LibraryPath);D:\Software\LAStools-nuc.edu\LAStools\LASlib\lib\Debug</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -154,7 +155,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lasexample.cpp" />
+    <ClCompile Include="lasexample_add_rgb.cpp" />
+    <ClCompile Include="lasexample_recover_returns_from_trajectory_in_extra_bytes.cpp" />
+    <ClCompile Include="lasexample_simple_classification.cpp" />
+    <ClCompile Include="lasexample_write_only_full_waveform.cpp" />
+    <ClCompile Include="lasexample_write_only_with_extra_bytes.cpp" />
+    <ClCompile Include="readlasLASlib.cpp" />
     <ClCompile Include="readlasLaslibtest.cpp" />
+    <ClCompile Include="readwritelasLaslibtest2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

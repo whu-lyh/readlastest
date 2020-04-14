@@ -56,7 +56,7 @@ int main ()
 	if (ofs.is_open ())
 	{
 		liblas::Header oheader;
-		oheader.SetDataFormatId (liblas::ePointFormat2); // Time only
+		oheader.SetDataFormatId (liblas::ePointFormat1); // Time only
 		//oheader.SetDataFormatId (liblas::ePointFormat2); //color and intensity
 		oheader.SetVersionMajor (1);
 		oheader.SetVersionMinor (2);
@@ -78,8 +78,8 @@ int main ()
 
 			//std::cout << p.GetX () << ", " << p.GetY () << ", " << p.GetZ () << "\n";
 			point.SetCoordinates (p.GetX (), p.GetY (), p.GetZ ());
-			point.SetIntensity (10);
-			point.SetColor (liblas::Color (255, 255, 0));
+			/*point.SetIntensity (10);
+			point.SetColor (liblas::Color (255, 255, 0));*/
 			writer.WritePoint (point);
 		}
 

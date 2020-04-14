@@ -18,5 +18,29 @@
     <ClCompile Include="readlasLaslibtest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="readwritelasLaslibtest2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="readlasLASlib.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample_add_rgb.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample_recover_returns_from_trajectory_in_extra_bytes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample_simple_classification.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample_write_only_full_waveform.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="lasexample_write_only_with_extra_bytes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

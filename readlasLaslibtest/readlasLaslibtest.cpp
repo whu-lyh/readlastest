@@ -1,8 +1,4 @@
-﻿#ifndef LASLIB_DLL
-#define LASLIB_DLL
-#endif
-
-#if _DEBUG
+﻿#if _DEBUG
 #pragma comment(lib,"LASlib_d.lib")
 #else
 #pragma comment(lib,"LASlib.lib")
@@ -31,58 +27,27 @@ int main()
 		std::cerr << "ERROR: could not open lasreader\n";
 	}
 	size_t point_count = lasreader->header.number_of_point_records;
+	std::cout << point_count << std::endl;
 
 	//lasreader->header.set_bounding_box ();
 	lasreader->header.x_offset;
 	lasreader->header.x_scale_factor;
-	U8 point_type_ = lasreader->header.point_data_format;
-	std::cout << point_type_ << std::endl;
 
-	// 遍历点云
-	//while (lasreader->read_point ()) {
-	//	std::cout << std::fixed << lasreader->point.get_x () << "  "
-	//		<< lasreader->point.get_y () << "  "
-	//		<< lasreader->point.get_z () << "  "
-	//		<<lasreader->point.get_R ()<<"  "
-	//		<<lasreader->point.get_intensity ()<<" "
-	//		<<lasreader->point.get_gps_time ()<<"  "
-	//		<<std::endl;
-	//}
-
-	std::string file_path_out ("F:/Data/laslib.las");
+	std::string file_path_out ("./laslib.las");
 	LASwriteOpener laswriteopener;
 	laswriteopener.set_file_name (file_path_out.c_str ());
 
-	LASwriter* laswriter = laswriteopener.open (&lasreader->header);
-	if (laswriter == 0)
-	{
-		std::cerr << "ERROR: could not open laswriter\n";
-	}
-
-	//// where there is a point to read
-	//while (lasreader->read_point ())
-	//{
-	//	// modify the point
-	//	lasreader->point.set_point_source_ID (1020);
-	//	lasreader->point.set_user_data (42);
-	//	if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
-	//	lasreader->point.set_Z (lasreader->point.get_Z () + 10);
-	//	// write the modified point
-	//	laswriter->write_point (&lasreader->point);
-	//	// add it to the inventory
-	//	laswriter->update_inventory (&lasreader->point);
-	//}
-
 	// copy header for output
-
-	LASheader header = lasreader->header;
+	LASheader header;
+	strncpy (header.system_identifier, "Group.Yang", 11);
+	header.system_identifier [10] = '\0';
+	strncpy (header.generating_software, "0.1", 4);
+	header.generating_software [3] = '\0';
 
 	// zero the pointers of the other header so they don't get deallocated twice
-
 	lasreader->header.unlink ();
 
 	// we need a new LAS point type for adding RGB
-
 	U8 point_type = header.point_data_format;
 	U16 point_size = header.point_data_record_length;
 
@@ -107,27 +72,51 @@ int main()
 	header.point_data_format = point_type;
 	header.point_data_record_length = point_size;
 
+	LASwriter* laswriter = laswriteopener.open (&header);
+	if (laswriter == 0)
+	{
+		std::cerr << "ERROR: could not open laswriter\n";
+	}
+
 	LASpoint point;
+	point.init (&header, header.point_data_format, header.point_data_record_length, 0);
 	// where there is a point to read
 	while (lasreader->read_point ())
 	{
 		// copy the point
 		point = lasreader->point;
+		//before write a las the init should be done 
+		//point.quantizer = lasreader->point.quantizer;
+
+		//std::cout << std::fixed << lasreader->point.get_x () << std::endl;
+		//std::cout << std::fixed << point.get_X () << std::endl;
+		//std::cout << point.quantizer->get_x (point.get_X ()) << std::endl;
+
 		// change RGB
 		point.rgb [0] = point.rgb [1] = point.rgb [2] = U16_QUANTIZE (((point.get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
 		if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
 		// write the modified point
 		laswriter->write_point (&point);
+		laswriter->update_inventory (&point);
 	}
 
-	laswriter->update_header (&lasreader->header, TRUE);
+	laswriter->update_header (&header, TRUE);
 
 	I64 total_bytes = laswriter->close ();
+	if (laswriter == 0)
+	{
+		std::cerr << "ERROR: could not open laswriter\n";
+	}
 	delete laswriter;
 
 	lasreader->close ();
+	if (lasreader == 0)
+	{
+		std::cerr << "ERROR: could not open lasreader\n";
+	}
 	delete lasreader;
 
     std::cout << "Hello World!\n"; 
+	system ("pause");
 	return 0;
 }
