@@ -78,13 +78,13 @@ int main()
 		std::cerr << "ERROR: could not open laswriter\n";
 	}
 
-	LASpoint point;
-	point.init (&header, header.point_data_format, header.point_data_record_length, 0);
+	LASpoint *point = new LASpoint();
+	point->init (&header, header.point_data_format, header.point_data_record_length, 0);
 	// where there is a point to read
 	while (lasreader->read_point ())
 	{
 		// copy the point
-		point = lasreader->point;
+		*point = lasreader->point;
 		//before write a las the init should be done 
 		//point.quantizer = lasreader->point.quantizer;
 
@@ -93,11 +93,11 @@ int main()
 		//std::cout << point.quantizer->get_x (point.get_X ()) << std::endl;
 
 		// change RGB
-		point.rgb [0] = point.rgb [1] = point.rgb [2] = U16_QUANTIZE (((point.get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
+		point->rgb [0] = point->rgb [1] = point->rgb [2] = U16_QUANTIZE (((point->get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
 		if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
 		// write the modified point
-		laswriter->write_point (&point);
-		laswriter->update_inventory (&point);
+		laswriter->write_point (point);
+		laswriter->update_inventory (point);
 	}
 
 	laswriter->update_header (&header, TRUE);
