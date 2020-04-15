@@ -163,7 +163,7 @@
     <ClCompile Include="lasexample_write_only_with_extra_bytes.cpp" />
     <ClCompile Include="readlasLASlib.cpp" />
     <ClCompile Include="readlasLaslibtest.cpp" />
-    <ClCompile Include="readwritelasLaslibtest2.cpp" />
+    <ClCompile Include="writefrompcl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

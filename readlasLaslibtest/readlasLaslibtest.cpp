@@ -5,6 +5,7 @@
 #endif
 
 #include <iostream>
+#include <time.h>
 
 #include "lasreader.hpp"
 #include "laswriter.hpp"
@@ -44,6 +45,23 @@ int main()
 	strncpy (header.generating_software, "0.1", 4);
 	header.generating_software [3] = '\0';
 
+	//set creation date
+	WIN32_FILE_ATTRIBUTE_DATA attr;
+	SYSTEMTIME creation;
+	GetFileAttributesEx ((LPCWSTR)file_path.c_str(), GetFileExInfoStandard, &attr);
+	FileTimeToSystemTime (&attr.ftCreationTime, &creation);
+	int startday [13] = { -1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
+	header.file_creation_day = startday [creation.wMonth] + creation.wDay;
+	header.file_creation_year = creation.wYear;
+
+	time_t now=time (0);
+	tm *ltm = localtime (&now);
+	header.file_creation_year = 1900 + ltm->tm_year;
+	header.file_creation_day = 1+ltm->tm_mon;
+	std::cout << ltm->tm_year << std::endl;
+	std::cout << ltm->tm_mon << std::endl;
+	std::cout << ltm->tm_mday << std::endl;
+
 	// zero the pointers of the other header so they don't get deallocated twice
 	lasreader->header.unlink ();
 
@@ -71,6 +89,14 @@ int main()
 
 	header.point_data_format = point_type;
 	header.point_data_record_length = point_size;
+	header.version_major = 1;
+	header.version_minor = 2;
+	header.x_scale_factor = 0.1;
+	header.y_scale_factor = 0.1;
+	header.z_scale_factor = 0.1;
+	header.x_offset = 50000;
+	header.y_offset = 50000;
+	header.z_offset = 200;
 
 	LASwriter* laswriter = laswriteopener.open (&header);
 	if (laswriter == 0)
@@ -84,7 +110,14 @@ int main()
 	while (lasreader->read_point ())
 	{
 		// copy the point
-		*point = lasreader->point;
+		//*point = lasreader->point;
+		point->set_x (lasreader->point.get_x ());
+		point->set_y (lasreader->point.get_y ());
+		point->set_z (lasreader->point.get_z ());
+		point->rgb [0] = 255;
+		point->rgb [1] = 0;
+		point->rgb [2] = 0;
+
 		//before write a las the init should be done 
 		//point.quantizer = lasreader->point.quantizer;
 
@@ -93,8 +126,8 @@ int main()
 		//std::cout << point.quantizer->get_x (point.get_X ()) << std::endl;
 
 		// change RGB
-		point->rgb [0] = point->rgb [1] = point->rgb [2] = U16_QUANTIZE (((point->get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
-		if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
+		//point->rgb [0] = point->rgb [1] = point->rgb [2] = U16_QUANTIZE (((point->get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
+		//if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
 		// write the modified point
 		laswriter->write_point (point);
 		laswriter->update_inventory (point);

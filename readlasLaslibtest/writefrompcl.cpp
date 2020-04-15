@@ -29,6 +29,8 @@ int main1 () {
 
 	//// ³õÊ¼»¯Í·
 	LASheader *lasheader_ = new LASheader ();
+	lasheader_->version_major = 1;
+	lasheader_->version_minor = 2;
 	lasheader_->x_scale_factor = 1.0;
 	lasheader_->y_scale_factor = 1.0;
 	lasheader_->z_scale_factor = 1.0;
