@@ -22,38 +22,39 @@ int main()
 	{
 		std::cerr<<"ERROR: no input specified\n";
 	}
+
 	LASreader* lasreader = lasreadopener.open ();
 	if (lasreader == 0)
 	{
 		std::cerr << "ERROR: could not open lasreader\n";
 	}
+
+	//some info read from header file
 	size_t point_count = lasreader->header.number_of_point_records;
-	std::cout << point_count << std::endl;
+	std::cout << "Point numbers:	" << point_count << std::endl;
+	size_t record_length = lasreader->header.point_data_record_length;
+	std::cout << "Record length:	" << record_length << std::endl;
+	size_t header_size = lasreader->header.header_size;
+	std::cout << "Header size:	" << lasreader->header.header_size << std::endl;
+	size_t offset_to_point_data = lasreader->header.offset_to_point_data;
+	std::cout << "Offset_to_point_data" << lasreader->header.offset_to_point_data << std::endl;
 
 	//lasreader->header.set_bounding_box ();
 	lasreader->header.x_offset;
 	lasreader->header.x_scale_factor;
 
-	std::string file_path_out ("./laslib.las");
+	std::string file_path_out ("./laslibOutputPointCloud.las");
 	LASwriteOpener laswriteopener;
 	laswriteopener.set_file_name (file_path_out.c_str ());
 
-	// copy header for output
+	//header file for output
 	LASheader header;
 	strncpy (header.system_identifier, "Group.Yang", 11);
 	header.system_identifier [10] = '\0';
 	strncpy (header.generating_software, "0.1", 4);
 	header.generating_software [3] = '\0';
 
-	//set creation date
-	WIN32_FILE_ATTRIBUTE_DATA attr;
-	SYSTEMTIME creation;
-	GetFileAttributesEx ((LPCWSTR)file_path.c_str(), GetFileExInfoStandard, &attr);
-	FileTimeToSystemTime (&attr.ftCreationTime, &creation);
-	int startday [13] = { -1, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 };
-	header.file_creation_day = startday [creation.wMonth] + creation.wDay;
-	header.file_creation_year = creation.wYear;
-
+	//set creation date ==> maybe useless
 	time_t now=time (0);
 	tm *ltm = localtime (&now);
 	header.file_creation_year = 1900 + ltm->tm_year;
@@ -67,7 +68,22 @@ int main()
 
 	// we need a new LAS point type for adding RGB
 	U8 point_type = header.point_data_format;
+	//xyz->0,xyzrgb->2,xyzt->1,xyztrgb->3
 	U16 point_size = header.point_data_record_length;
+	//xyz->20,xyzrgb->26,xyzt->28,xyztrgb->34
+
+	if (point_type > 5)
+	{
+		header.version_minor = 4;
+		header.header_size = 375;
+		header.offset_to_point_data = 375;
+	}
+	else
+	{
+		header.version_minor = 2;
+		header.header_size = 227;
+		header.offset_to_point_data = 227;
+	}
 
 	switch (point_type)
 	{
@@ -89,8 +105,6 @@ int main()
 
 	header.point_data_format = point_type;
 	header.point_data_record_length = point_size;
-	header.version_major = 1;
-	header.version_minor = 2;
 	header.x_scale_factor = 0.1;
 	header.y_scale_factor = 0.1;
 	header.z_scale_factor = 0.1;
@@ -105,7 +119,22 @@ int main()
 	}
 
 	LASpoint *point = new LASpoint();
-	point->init (&header, header.point_data_format, header.point_data_record_length, 0);
+	//LASpoint p;//??
+
+	//whether acivate compression mode?
+	if (header.laszip)
+	{
+		LASzip* laszip = new LASzip();
+		laszip->setup(header.point_data_format, header.point_data_record_length);
+		point->init(&header, laszip->num_items, laszip->items, &header);
+		delete header.laszip;
+		header.laszip = laszip;
+	}
+	else
+	{
+		point->init (&header, header.point_data_format, header.point_data_record_length, 0);
+	}
+	
 	// where there is a point to read
 	while (lasreader->read_point ())
 	{
@@ -116,7 +145,9 @@ int main()
 		point->set_z (lasreader->point.get_z ());
 		point->rgb [0] = 255;
 		point->rgb [1] = 0;
-		point->rgb [2] = 0;
+		point->rgb [2] = U16_QUANTIZE(120);
+
+		point->set_number_of_returns (15);
 
 		//before write a las the init should be done 
 		//point.quantizer = lasreader->point.quantizer;
