@@ -38,10 +38,12 @@ int main()
 	std::cout << "Header size:	" << lasreader->header.header_size << std::endl;
 	size_t offset_to_point_data = lasreader->header.offset_to_point_data;
 	std::cout << "Offset_to_point_data" << lasreader->header.offset_to_point_data << std::endl;
+	double x_offset = lasreader->header.x_offset;
+	std::cout << "X offset" << x_offset << std::endl;
+	double x_scale_factor = lasreader->header.x_scale_factor;
+	std::cout << "X scale factor" << x_scale_factor << std::endl;
 
 	//lasreader->header.set_bounding_box ();
-	lasreader->header.x_offset;
-	lasreader->header.x_scale_factor;
 
 	std::string file_path_out ("./laslibOutputPointCloud.las");
 	LASwriteOpener laswriteopener;
@@ -143,8 +145,8 @@ int main()
 		point->set_x (lasreader->point.get_x ());
 		point->set_y (lasreader->point.get_y ());
 		point->set_z (lasreader->point.get_z ());
-		point->rgb [0] = 255;
-		point->rgb [1] = 0;
+		point->rgb [0] = U16_QUANTIZE(255);
+		point->rgb [1] = U16_QUANTIZE (0);
 		point->rgb [2] = U16_QUANTIZE(120);
 
 		point->set_number_of_returns (15);
