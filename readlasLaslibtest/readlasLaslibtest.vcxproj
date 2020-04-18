@@ -161,6 +161,7 @@
     <ClCompile Include="lasexample_simple_classification.cpp" />
     <ClCompile Include="lasexample_write_only_full_waveform.cpp" />
     <ClCompile Include="lasexample_write_only_with_extra_bytes.cpp" />
+    <ClCompile Include="lasformat.cpp" />
     <ClCompile Include="readlasLASlib.cpp" />
     <ClCompile Include="readlasLaslibtest.cpp" />
     <ClCompile Include="writefrompcl.cpp" />

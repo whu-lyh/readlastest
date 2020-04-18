@@ -113,6 +113,12 @@ int main()
 	header.x_offset = 50000;
 	header.y_offset = 50000;
 	header.z_offset = 200;
+	//点云精度怎么设置？
+	//for instance
+	//std::ofstream ofs;
+	//ofs.open (filepath, std::ios::out | std::ios::binary);
+	//ofs.setf (std::ios::fixed, std::ios::floatfield);
+	//ofs.precision (6);
 
 	LASwriter* laswriter = laswriteopener.open (&header);
 	if (laswriter == 0)
