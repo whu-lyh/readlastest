@@ -10,6 +10,19 @@
 #include "lasreader.hpp"
 #include "laswriter.hpp"
 
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+#include <boost/make_shared.hpp>
+
+/*
+	Coordinate exchange inside LASlib
+	LASpoint 内部有一个LASquantizer
+	*LASpoint					LASquantizer（编码器，用来在las文件内存存储数据，所以数据交换显得比较重要）
+	get_X	==>	X				quantizer没有set函数
+	get_x	==>					get_x(X)=X*x_scale_factor+xoffset
+	set_x	==>					get_X(x)=(x-xoffset)/x_scale_factor
+*/
+
 int main()
 {
 	// 点云路径
@@ -37,11 +50,11 @@ int main()
 	size_t header_size = lasreader->header.header_size;
 	std::cout << "Header size:	" << lasreader->header.header_size << std::endl;
 	size_t offset_to_point_data = lasreader->header.offset_to_point_data;
-	std::cout << "Offset_to_point_data" << lasreader->header.offset_to_point_data << std::endl;
+	std::cout << "Offset_to_point_data: " << lasreader->header.offset_to_point_data << std::endl;
 	double x_offset = lasreader->header.x_offset;
-	std::cout << "X offset" << x_offset << std::endl;
+	std::cout << "X offset: " << x_offset << std::endl;
 	double x_scale_factor = lasreader->header.x_scale_factor;
-	std::cout << "X scale factor" << x_scale_factor << std::endl;
+	std::cout << "X scale factor: " << x_scale_factor << std::endl;
 
 	//lasreader->header.set_bounding_box ();
 
@@ -64,6 +77,21 @@ int main()
 	std::cout << ltm->tm_year << std::endl;
 	std::cout << ltm->tm_mon << std::endl;
 	std::cout << ltm->tm_mday << std::endl;
+
+	// add to a pcl point cloud
+	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>> ();
+	while (lasreader->read_point ())
+	{
+		pcl::PointXYZRGB pt;
+		pt.x = lasreader->point.get_X (); //using get_x() to get the row coordinate in las file,but in the fact this will cause precision loss,which should be replaced by get_X
+		pt.y = lasreader->point.get_Y ();
+		pt.z = lasreader->point.get_Z ();
+		pt.r = lasreader->point.get_R () >> 8; //from u16 to float
+		pt.g = lasreader->point.get_G () >> 8;
+		pt.g = lasreader->point.get_B () >> 8;
+		//std::cout << std::fixed<<pt.x << "," << pt.y << "," << pt.z << "," << pt.r << "," << pt.g << "," << pt.b << std::endl;
+		cloud->push_back (pt);
+	}
 
 	// zero the pointers of the other header so they don't get deallocated twice
 	lasreader->header.unlink ();
@@ -110,9 +138,9 @@ int main()
 	header.x_scale_factor = 0.1;
 	header.y_scale_factor = 0.1;
 	header.z_scale_factor = 0.1;
-	header.x_offset = 50000;
-	header.y_offset = 50000;
-	header.z_offset = 200;
+	header.x_offset = lasreader->header.x_offset;
+	header.y_offset = lasreader->header.y_offset;
+	header.z_offset = lasreader->header.z_offset;
 	//点云精度怎么设置？
 	//for instance
 	//std::ofstream ofs;
@@ -144,16 +172,16 @@ int main()
 	}
 	
 	// where there is a point to read
-	while (lasreader->read_point ())
+	for(int i=0;i<cloud->points.size();++i)
 	{
 		// copy the point
 		//*point = lasreader->point;
-		point->set_x (lasreader->point.get_x ());
-		point->set_y (lasreader->point.get_y ());
-		point->set_z (lasreader->point.get_z ());
-		point->rgb [0] = U16_QUANTIZE(255);
+		point->set_X (static_cast<double>(cloud->points [i].x));
+		point->set_Y (static_cast<double>(cloud->points [i].y));
+		point->set_Z (static_cast<double>(cloud->points [i].z));
+		point->rgb [0] = U16_QUANTIZE (255);
 		point->rgb [1] = U16_QUANTIZE (0);
-		point->rgb [2] = U16_QUANTIZE(120);
+		point->rgb [2] = U16_QUANTIZE (120);
 
 		point->set_number_of_returns (15);
 
@@ -171,6 +199,35 @@ int main()
 		laswriter->write_point (point);
 		laswriter->update_inventory (point);
 	}
+
+	//read and write
+	//while (lasreader->read_point ())
+	//{
+	//	// copy the point
+	//	//*point = lasreader->point;
+	//	point->set_x (lasreader->point.get_x ());
+	//	point->set_y (lasreader->point.get_y ());
+	//	point->set_z (lasreader->point.get_z ());
+	//	point->rgb [0] = U16_QUANTIZE(255);
+	//	point->rgb [1] = U16_QUANTIZE (0);
+	//	point->rgb [2] = U16_QUANTIZE(120);
+
+	//	point->set_number_of_returns (15);
+
+	//	//before write a las the init should be done 
+	//	//point.quantizer = lasreader->point.quantizer;
+
+	//	//std::cout << std::fixed << lasreader->point.get_x () << std::endl;
+	//	//std::cout << std::fixed << point.get_X () << std::endl;
+	//	//std::cout << point.quantizer->get_x (point.get_X ()) << std::endl;
+
+	//	// change RGB
+	//	//point->rgb [0] = point->rgb [1] = point->rgb [2] = U16_QUANTIZE (((point->get_z () - header.min_z)*65535.0) / (header.max_z - header.min_z));
+	//	//if (lasreader->point.get_classification () == 12) lasreader->point.set_classification (1);
+	//	// write the modified point
+	//	laswriter->write_point (point);
+	//	laswriter->update_inventory (point);
+	//}
 
 	laswriter->update_header (&header, TRUE);
 
