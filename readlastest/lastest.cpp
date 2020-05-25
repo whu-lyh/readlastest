@@ -6,7 +6,7 @@
 #include <string>
 #include <liblas/liblas.hpp>
 
-int main () 
+int main3 () 
 {
 	//read las file
 	std::string filename = "F:/Data/EstoniaNew/N6mme_testarea/20190717_082048_LD5_grab_log_VLP-16_XYZ_ypr-1_-38_-0.5_0.1_0.23_0.535_19-07-17.las";

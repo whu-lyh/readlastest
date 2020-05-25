@@ -24,5 +24,22 @@
     <ClCompile Include="writelasfile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="parseLas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vacuateLas.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="basicLibs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

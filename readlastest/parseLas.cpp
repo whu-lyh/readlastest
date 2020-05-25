@@ -11,7 +11,7 @@
 
 uint32_t parsesinglelas (std::string filename);
 
-int main2 ()
+int main4 ()
 {
 	//read las files from a directory
 	std::string filenpaths = "D:/data/wuhan/iScan-00000000-20191212152907";

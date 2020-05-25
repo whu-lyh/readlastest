@@ -39,7 +39,7 @@ void parseLASmmf ( const char* pFile, uint32_t pts_num, const liblas::Header& he
 int main ()
 {
 	//read las files from a directory
-	std::string filenpaths = "D:/data/wuhan/iScan-00000000-20191212155401";
+	std::string filenpaths = "F:/Data/Zhangjiang8Block/originPC";
 	//std::string filenpaths = "D:/data/wuhan/vacuatedpc";
 
 	std::vector<std::string> lasfiles;
@@ -58,7 +58,7 @@ int main ()
 			return false;
 
 		liblas::ReaderFactory f;
-		liblas::Reader &reader = f.CreateWithStream ( ifs );
+		liblas::Reader reader = f.CreateWithStream ( ifs );
 
 		const liblas::Header header = reader.GetHeader ();
 		uint8_t major_version = header.GetVersionMajor ();
