@@ -31,12 +31,12 @@
 #endif // _DEBUG
 
 void parseLAS ( liblas::Reader& reader, const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, const Utility::Offset& offset );
-bool saveLAS ( const std::string& filepath, const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+bool saveLAS ( const std::string& filepath, const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
 								 const Utility::Offset& offset );
 void parseLASmmf ( const char* pFile, uint32_t pts_num, const liblas::Header& header, uint32_t pt_length,
 				   const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, const Utility::Offset& offset );
 
-int main ()
+int main5 ()
 {
 	//read las files from a directory
 	std::string filenpaths = "F:/Data/Zhangjiang8Block/originPC";
@@ -190,7 +190,7 @@ void parseLAS ( liblas::Reader& reader, const pcl::PointCloud<pcl::PointXYZRGB>:
 	}
 }
 
-bool saveLAS ( const std::string& filepath, const typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
+bool saveLAS ( const std::string& filepath, const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
 								  const Utility::Offset& offset )
 {
 	if ( cloud == nullptr )
