@@ -120,22 +120,32 @@ int main () {
 	Eigen::Matrix4f src2tar = Eigen::Matrix4f::Identity ();
 	trans_est.estimateRigidTransformation (*homo_ctrl_pts_cloud, *ctrl_pts_cloud, correspondences, src2tar);
 
-	std::string outpath = Utility::get_parent (ctrlpointspath);
-	saveLAS2 (outpath + "/ctrlpts.las", ctrl_pts_cloud, ctrl_offset);
-	saveLAS2 (outpath + "/ctrlpts_homo.las", homo_ctrl_pts_cloud, ctrl_offset);
+	//std::string outpath = Utility::get_parent (ctrlpointspath);
+	//saveLAS2 (outpath + "/ctrlpts.las", ctrl_pts_cloud, ctrl_offset);
+	//saveLAS2 (outpath + "/ctrlpts_homo.las", homo_ctrl_pts_cloud, ctrl_offset);
 
 	std::cout<< "Absolute transform matrix: \n" << src2tar;
 
+	//test a matrix multiply order
+	Eigen::Matrix4f additionlamatrix = Eigen::Matrix4f::Identity ();
+	additionlamatrix << 1, 0.000016, -0.000066, 0.012878, 
+						-0.000016, 1, 0.000005, 0.005005, 
+						0.000066, -0.000005, 1, 0.034225,
+						0, 0, 0, 1;
+
 	//transform points
-	std::string laspaths = "E:/codefiles\\PG-Code\\small_pointcloud\\pointcloud";
+	std::string laspaths = "E:\\codefiles\\PG-Code\\small_pointcloud\\sectioncloudtest";
 	std::vector<std::string> files;
 	Utility::get_files (laspaths, ".las", files);
 	for (int lasi = 0; lasi < files.size (); ++lasi) {
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>> ();
 		Utility::Offset offset (0, 0, 0);
 		parseLAS (files [lasi], cloud, offset);
-		pcl::transformPointCloud (*cloud, *cloud, src2tar);
-		std::string outpath = Utility::get_parent (files [lasi]) + "/" + Utility::get_name_without_ext (files [lasi]) + "_transformed.las";
+		
+		Eigen::Matrix4f final = additionlamatrix * src2tar;
+
+		pcl::transformPointCloud (*cloud, *cloud, final);
+		std::string outpath = Utility::get_parent (files [lasi]) + "/" + Utility::get_name_without_ext (files [lasi]) + "_trans.las";
 		std::cout << std::endl;
 		saveLAS2 (outpath, cloud, offset);
 	}
