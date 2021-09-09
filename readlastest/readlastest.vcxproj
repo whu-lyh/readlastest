@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>D:\vs2017lib\include;D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(WindowsSDK_IncludePath);$(VC_IncludePath);D:\Software\libLAS-1.8.1\liblas-gdal1115\install\include</IncludePath>
-    <LibraryPath>D:\Software\pcl-1.8.1\3rdParty\Boost\lib;$(VC_LibraryPath_x64);D:\vs2017lib\lib\Release;$(WindowsSDK_LibraryPath_x64);D:\Software\libLAS-1.8.1\liblas-gdal1115\install\lib\release</LibraryPath>
+    <IncludePath>$(ThirdPartyLibraries_vs2017_x64)\include;$(WindowsSDK_IncludePath);$(VC_IncludePath);</IncludePath>
+    <LibraryPath>$(ThirdPartyLibraries_vs2017_x64)\x64\vc15\lib\Release;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>D:\vs2017lib\include;D:\Software\pcl-1.8.1\3rdParty\Boost\include\boost-1_64;$(WindowsSDK_IncludePath);$(VC_IncludePath);D:\Software\libLAS-1.8.1\liblas-gdal1115\install\include</IncludePath>
@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="changelas.cpp" />
     <ClCompile Include="lastest.cpp" />
     <ClCompile Include="loadCtrlPoints.cpp" />
     <ClCompile Include="parseLas.cpp" />

@@ -44,7 +44,7 @@ int parseLAS (std::string filename,
 	const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud,
 	Utility::Offset& offset);
 
-int main () {
+int main5 () {
 
 	std::string ctrlpointspath = "E:/codefiles/PG-Code/small_pointcloud/control_points.txt";
 	if (!Utility::file_exist (ctrlpointspath))
@@ -95,7 +95,7 @@ int main () {
 		//skip the last empty line of ctrl point file
 		if (ctrl_pt.x == homo_ctrl_pts.x) break;
 		ctrl_pt.r = 255;
-		ctrl_pt.g = 255;
+		ctrl_pt.g = 0;
 		ctrl_pt.b = 0;
 		homo_ctrl_pts.r = 0;
 		homo_ctrl_pts.g = 255;
@@ -128,13 +128,13 @@ int main () {
 
 	//test a matrix multiply order
 	Eigen::Matrix4f additionlamatrix = Eigen::Matrix4f::Identity ();
-	additionlamatrix << 1, 0.000016, -0.000066, 0.012878, 
-						-0.000016, 1, 0.000005, 0.005005, 
-						0.000066, -0.000005, 1, 0.034225,
-						0, 0, 0, 1;
+	additionlamatrix << 1,			 0.000016,	-0.000066,	 50000.012878, 
+						-0.000016,	1,			0.000005,	 0.005005, 
+						0.000066,	 -0.000005, 1,			 0.034225,
+						0,			0,			0,			 1;
 
 	//transform points
-	std::string laspaths = "E:\\codefiles\\PG-Code\\small_pointcloud\\sectioncloudtest";
+	std::string laspaths = "E:\\codefiles\\PG-Code\\finedTest_Data11";
 	std::vector<std::string> files;
 	Utility::get_files (laspaths, ".las", files);
 	for (int lasi = 0; lasi < files.size (); ++lasi) {
@@ -142,10 +142,11 @@ int main () {
 		Utility::Offset offset (0, 0, 0);
 		parseLAS (files [lasi], cloud, offset);
 		
-		Eigen::Matrix4f final = additionlamatrix * src2tar;
+		Eigen::Matrix4f final = /*additionlamatrix * */ src2tar;
+		//Eigen::Matrix4f final =  additionlamatrix * src2tar;
 
 		pcl::transformPointCloud (*cloud, *cloud, final);
-		std::string outpath = Utility::get_parent (files [lasi]) + "/" + Utility::get_name_without_ext (files [lasi]) + "_trans.las";
+		std::string outpath = Utility::get_parent (files [lasi]) + "/trans" + Utility::get_name_without_ext (files [lasi]) + ".las";
 		std::cout << std::endl;
 		saveLAS2 (outpath, cloud, offset);
 	}
