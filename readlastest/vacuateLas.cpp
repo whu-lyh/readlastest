@@ -36,10 +36,13 @@ bool saveLAS(const std::string& filepath, const pcl::PointCloud<pcl::PointXYZRGB
 void parseLASmmf(const char* pFile, uint32_t pts_num, const liblas::Header& header, uint32_t pt_length,
 	const pcl::PointCloud<pcl::PointXYZRGB>::Ptr& cloud, const Utility::Offset& offset);
 
-int main()
+// argv[1], point cloud path
+// argv[2], vacuate ratio
+int main(int argc, char* argv[])
 {
 	//read las files from a directory
-	std::string filenpaths = "D:/las/RIEGL";
+	//std::string filenpaths = "D:/las/RIEGL";
+	std::string filenpaths = argv[1];// "F:/Data/20210904_TianRunTech_data/GeoReferencedPC/DATA20210712060828/coordinate";
 	//std::string filenpaths = "D:/data/wuhan/vacuatedpc";
 
 	std::vector<std::string> lasfiles;
@@ -153,7 +156,7 @@ int main()
 		ifs.close();
 
 		pcl::VoxelGrid<pcl::PointXYZRGB> down_filter;
-		float leaf = 0.5f;
+		float leaf = std::stof(argv[2]);
 		down_filter.setLeafSize(leaf, leaf, leaf);
 		down_filter.setInputCloud(cloudin);
 		down_filter.filter(*cloudout);
