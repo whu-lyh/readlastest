@@ -9,10 +9,11 @@
 #include "lasreader.hpp"
 #include "laswriter.hpp"
 
-int main0 ()
+int main1 ()
 {
 	// 点云路径
-	std::string file_path ("F:/Data/EstoniaNew/N6mme_testarea/20190717_082048_LD5_grab_log_VLP-16_XYZ_ypr-1_-38_-0.5_0.1_0.23_0.535_19-07-17.las");
+	std::string file_path ("E:/codefiles\\PG-Code\\small_pointcloud\\outpointcloud\\section62.las");
+	//std::string file_path ("F:/Data/EstoniaNew/N6mme_testarea/20190717_082048_LD5_grab_log_VLP-16_XYZ_ypr-1_-38_-0.5_0.1_0.23_0.535_19-07-17.las");
 
 	// 打开las文件
 	LASreadOpener lasreadopener;
@@ -41,8 +42,12 @@ int main0 ()
 			<< lasreader->point.get_y () << "  "
 			<< lasreader->point.get_z () << "  "
 			<< lasreader->point.get_R () << "  "
-			<< lasreader->point.get_intensity () << " "
-			<< lasreader->point.get_gps_time () << "  "
+			<< lasreader->point.get_G () << "  "
+			<< lasreader->point.get_B () << " ,inten:  "
+			<< lasreader->point.get_intensity () << " ,time:  "
+			<< (double)lasreader->point.get_gps_time () << " ,number:  "
+			<< (unsigned)lasreader->point.get_number_of_returns () << " ,edge of flight "
+			<< (unsigned)lasreader->point.get_edge_of_flight_line () 
 			<< std::endl;
 	}
 
